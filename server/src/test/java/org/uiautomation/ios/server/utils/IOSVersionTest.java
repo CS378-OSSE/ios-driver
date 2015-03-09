@@ -30,7 +30,7 @@ public class IOSVersionTest {
   }
 
   @Test
-  public void canParseIncrementamVersion() {
+  public void canParseIncrementalVersion() {
     IOSVersion v7 = new IOSVersion("7.0.3");
     Assert.assertEquals(v7.getMajor(), "7");
     Assert.assertEquals(v7.getMinor(), "0");

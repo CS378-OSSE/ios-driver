@@ -18,10 +18,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.uiautomation.ios.client.uiamodels.impl.RemoteIOSDriver;
 
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -29,90 +32,116 @@ import java.util.logging.Logger;
 
 public abstract class BaseIOSDriverTest {
 
-  private static final Logger log = Logger.getLogger(BaseIOSDriverTest.class.getName());
+    private static final Logger log = Logger.getLogger(BaseIOSDriverTest.class.getName());
 
-  protected RemoteIOSDriver driver;
+    protected RemoteIOSDriver driver;
 
-  private IOSServer server;
-  private IOSServerConfiguration config;
+    private IOSServer server;
+    private IOSServerConfiguration config;
 
-  @BeforeClass
-  public final void beforeClass() throws Exception {
-    try {
-      startServer();
-    } catch (Throwable ex) {
-      System.err.println("FATAL error in " + getClass().getSimpleName() + ".beforeClass: " + ex);
-      log.log(Level.SEVERE, ex.toString(), ex);
-      throw ex;
+    @BeforeMethod
+    public void handleTestMethodName(Method method)
+    {
+        String testName = method.getName();
+        System.out.println("------------------------------- " + this.getClass().getCanonicalName() + "." + testName);
     }
-  }
 
-  @AfterClass
-  public final void afterClass() throws Exception {
-    stopDriver();
-    stopServer();
-  }
+    @BeforeClass
+    public final void beforeClass() throws Exception {
+        try {
+            startServer();
+            waitForServerRun();
+        } catch (Throwable ex) {
+            System.err.println("FATAL error in " + getClass().getSimpleName() + ".beforeClass: " + ex);
+            log.log(Level.SEVERE, ex.toString(), ex);
+            throw ex;
+        }
+    }
 
-  private void startServer() throws Exception {
-    String[] args = {"-port", "4444", "-host", "localhost",
-                     "-aut", SampleApps.getUICatalogFile(),
-                     "-aut", SampleApps.getUICatalogIpad(),
-                     "-aut", SampleApps.getGeocoderFile(),
-                     "-aut", SampleApps.getIntlMountainsFile(),
-                     "-aut", SampleApps.gettestNoContentFile(),
-                     "-aut", SampleApps.getPPNQASampleApp(),
+    @AfterClass
+    public final void afterClass() throws Exception {
+        stopDriver();
+        stopServer();
+    }
+
+    private void startServer() throws Exception {
+        String[] args = {"-port", "4444", "-host", "localhost",
+                "-aut", SampleApps.getUICatalogFile(),
+                "-aut", SampleApps.getUICatalogIpad(),
+                "-aut", SampleApps.getGeocoderFile(),
+                "-aut", SampleApps.getIntlMountainsFile(),
+                "-aut", SampleApps.gettestNoContentFile(),
+                "-aut", SampleApps.getPPNQASampleApp(),
                      /*"-beta",*/ "-folder", "applications",
-                     "-sessionTimeout", "60",
-    };
-    config = IOSServerConfiguration.create(args);
-    server = new IOSServer(config);
-    server.start();
-  }
-
-  private void stopServer() throws Exception {
-    log.info("stopServer: " + server);
-    if (server != null) {
-      try {
-        server.stop();
-      } catch (Exception ex) {
-        log.log(Level.SEVERE, "error stopping server", ex);
-      }
-      server = null;
+                "-sessionTimeout", "60",
+        };
+        config = IOSServerConfiguration.create(args);
+        server = new IOSServer(config);
+        server.start();
     }
-  }
 
-  protected final RemoteIOSDriver getDriver(IOSCapabilities cap) {
-    boolean simulator = true;
-    cap.setCapability(IOSCapabilities.SIMULATOR, simulator);
-    driver = new RemoteIOSDriver(getRemoteURL(), cap);
-    return driver;
-  }
-
-  protected final void stopDriver() {
-    log.info("stopDriver: " + driver);
-    if (driver != null) {
-      try {
-        driver.quit();
-      } catch (Exception ex) {
-        log.log(Level.SEVERE, "error stopping server", ex);
-      }
-      driver = null;
+    private void stopServer() {
+        log.info("stopServer: " + server);
+        if (server != null) {
+            try {
+                server.stop();
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "error stopping server", ex);
+            }
+            server = null;
+        }
     }
-  }
 
-  protected final URL getRemoteURL() {
-    try {
-      URL remote = new URL("http://" + config.getHost() + ":" + config.getPort() + "/wd/hub");
-      return remote;
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
+    protected final RemoteIOSDriver getDriver(IOSCapabilities cap) {
+        boolean simulator = true;
+        cap.setCapability(IOSCapabilities.SIMULATOR, simulator);
+        driver = new RemoteIOSDriver(getRemoteURL(), cap);
+        return driver;
     }
-  }
 
-  protected final void waitForElement(WebDriver driver, org.openqa.selenium.By by, long timeOut) {
-    WebElement
-        element =
-        (new WebDriverWait(driver, timeOut))
-            .until(ExpectedConditions.visibilityOfElementLocated(by));
-  }
+    protected final void stopDriver() {
+        log.info("stopDriver: " + driver);
+        if (driver != null) {
+            try {
+                driver.quit();
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "error stopping server", ex);
+            }
+            driver = null;
+        }
+    }
+
+    protected final URL getRemoteURL() {
+        try {
+            URL remote = new URL("http://" + config.getHost() + ":" + config.getPort() + "/wd/hub");
+            return remote;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected final void waitForElement(WebDriver driver, org.openqa.selenium.By by, long timeOut) {
+        WebElement
+                element =
+                (new WebDriverWait(driver, timeOut))
+                        .until(ExpectedConditions.visibilityOfElementLocated(by));
+    }
+
+    protected void waitForServerRun() throws InterruptedException {
+        Assert.assertNotNull(server);
+        while (!server.isRunning()) {
+            Thread.sleep(1000);
+        }
+    }
+
+    protected void waitForServerToStop() throws InterruptedException {
+        while (server != null && server.isRunning()) {
+            Thread.sleep(1000);
+        }
+    }
+
+    protected IOSServer getServer() {
+        return server;
+    }
+
 }

@@ -21,49 +21,43 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.uiautomation.ios.IOSCapabilities;
-import org.uiautomation.ios.IOSServer;
-import org.uiautomation.ios.IOSServerConfiguration;
-import org.uiautomation.ios.IOSServerManager;
-import org.uiautomation.ios.ServerSideSession;
+import org.uiautomation.ios.*;
 import org.uiautomation.ios.application.MobileSafariLocator;
 import org.uiautomation.ios.command.configuration.Configuration;
 import org.uiautomation.ios.communication.HttpClientFactory;
 import org.uiautomation.ios.instruments.InstrumentsFailedToStartException;
+import org.uiautomation.ios.logging.Log;
 import org.uiautomation.ios.utils.IOSVersion;
 
 import java.net.URL;
 import java.util.Set;
+import java.util.logging.Logger;
 
-public class ServerCanStopTest {
+public class ServerCanStopTest extends BaseIOSDriverTest {
 
+    private static final Logger log = Logger.getLogger(ServerCanStopTest.class.getName());
 
   @Test
   public void end2end() throws Exception {
+    waitForServerRun();
 
-    IOSServerConfiguration config = new IOSServerConfiguration();
-    config.setPort(4444);
-    config.setHost("localhost");
-
-    HttpClient client = HttpClientFactory.getClient();
-    URL u = new URL("http://" + config.getHost() + ":" + config.getPort() + "/wd/hub/manage/stopgracefully");
-
+    // do a GET /wd/hub/manage/stopgracefully (expecting a 200)
+    URL u = new URL(getRemoteURL() + "/manage/stopgracefully");
     BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("GET", u.toExternalForm());
-
     HttpHost h = new HttpHost(u.getHost(), u.getPort());
-
-    final IOSServer server = new IOSServer(config);
-    server.start();
-
-
-    waitForServerRun(server);
+    HttpClient client = HttpClientFactory.getClient();
     HttpResponse response = client.execute(h, r);
-
     Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
-    server.stopGracefully();
-    ServerSideSession s = server.getDriver().createSession(IOSCapabilities.iphone("Safari"));
+
+      waitForServerToStop();
+
+      // stop the server
+      // @@@@ huh?  why?  didn't we do that above?
+    // getServer().stopGracefully();
+
+      // make sure that we CANNOT create a new session
+    ServerSideSession s = getServer().getDriver().createSession(IOSCapabilities.iphone("Safari"));
     Assert.assertNull(s);
-    waitForServerToStop(server);
 
   }
 
@@ -204,15 +198,4 @@ public class ServerCanStopTest {
     }
   }
 
-  private void waitForServerRun(IOSServer server) throws InterruptedException {
-    while (!server.isRunning()) {
-      Thread.sleep(1000);
-    }
-  }
-
-  private void waitForServerToStop(IOSServer server) throws InterruptedException {
-    while (server.isRunning()) {
-      Thread.sleep(1000);
-    }
-  }
 }
