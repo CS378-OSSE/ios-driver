@@ -62,7 +62,7 @@ public abstract class BaseIOSDriverTest {
                      "-aut", SampleApps.gettestNoContentFile(),
                      "-aut", SampleApps.getPPNQASampleApp(),
                      /*"-beta",*/ "-folder", "applications",
-                     "-sessionTimeout", "60",
+                     "-sessionTimeout", "70",
     };
     config = IOSServerConfiguration.create(args);
     server = new IOSServer(config);
