@@ -40,7 +40,7 @@ public class ActionSheetTest extends BaseIOSDriverTest {
   @BeforeClass
   public void startDriver() {
     driver = getDriver(SampleApps.uiCatalogCap());
-      driver.findElement(By.xpath("//UIAButton[@name='UICatalog']")).click();
+    driver.findElement(By.xpath("//UIAButton[@name='UICatalog']")).click();
     goToAlertScreen();
   }
 

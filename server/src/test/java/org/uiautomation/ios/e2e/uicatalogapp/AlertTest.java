@@ -39,7 +39,7 @@ public class AlertTest extends BaseIOSDriverTest {
   @BeforeClass
   public void startDriver() {
     driver = getDriver(SampleApps.uiCatalogCap());
-      driver.findElement(By.xpath("//UIAButton[@name='UICatalog']")).click();
+    driver.findElement(By.xpath("//UIAButton[@name='UICatalog']")).click();
     goToAlertScreen();
   }
 
@@ -71,11 +71,9 @@ public class AlertTest extends BaseIOSDriverTest {
 
   @Test(expectedExceptions = UnhandledAlertException.class)
   public void cannotInteractWithAppWhenAlertOpen() throws Exception {
-    Criteria
-        c =
+    Criteria c =
         new AndCriteria(new TypeCriteria(UIAStaticText.class), new NameCriteria("Simple"));
     UIAElement el = driver.findElements(c).get(0);
-      // why there are two Simple? I see it read two "Simple"'s
     // opens an alert.
     el.tap();
     try {
@@ -89,11 +87,9 @@ public class AlertTest extends BaseIOSDriverTest {
 
   @Test
   public void canFindElementInAlertIfAlertOpened() throws Exception {
-    Criteria
-        c =
+    Criteria c =
         new AndCriteria(new TypeCriteria(UIAStaticText.class), new NameCriteria("Simple"));
     UIAElement el = driver.findElements(c).get(0);
-      // again?
     // opens an alert.
     el.tap();
 
@@ -118,8 +114,7 @@ public class AlertTest extends BaseIOSDriverTest {
   @Test
   public void canSeeAlertsAsWebElements() throws Exception {
     RemoteWebDriver d = (RemoteWebDriver) driver;
-    Criteria
-        c =
+    Criteria c =
         new AndCriteria(new TypeCriteria(UIAStaticText.class), new NameCriteria("Simple"));
     UIAElement el = driver.findElements(c).get(0);
     try {
@@ -163,13 +158,6 @@ public class AlertTest extends BaseIOSDriverTest {
     Alert alert = d.switchTo().alert();
     alert.sendKeys("test1");
     alert.accept();
-
-      try {
-          d.switchTo().alert();
-          Assert.fail("alert should be gone.");
-      } catch (NoAlertPresentException e) {
-          // expected
-      }
   }
 
 
@@ -243,13 +231,6 @@ public class AlertTest extends BaseIOSDriverTest {
       //expected
     }
     alert.dismiss();
-
-      try {
-          d.switchTo().alert();
-          Assert.fail("alert should be gone.");
-      } catch (NoAlertPresentException e) {
-          // expected
-      }
   }
 
   @Test
@@ -262,6 +243,7 @@ public class AlertTest extends BaseIOSDriverTest {
     Alert alert = waitForAlert(driver);
     WebElement field = driver.findElement(By.xpath("//UIAAlert//UIASecureTextField"));
     Assert.assertEquals(field.getAttribute("value"), "");
+    // password must have length >=5
     alert.sendKeys("test1");
     Assert.assertEquals(field.getAttribute("value"), "•••••");
     alert.accept();
@@ -278,8 +260,7 @@ public class AlertTest extends BaseIOSDriverTest {
   @Test(expectedExceptions = NoAlertPresentException.class)
   public void checkUIAlertView() throws Exception {
 
-    Criteria
-        c =
+    Criteria c =
         new AndCriteria(new TypeCriteria(UIAStaticText.class), new NameCriteria("Simple"));
     UIAElement el = driver.findElements(c).get(0);
     // opens an alert.

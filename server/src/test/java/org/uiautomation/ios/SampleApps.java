@@ -88,7 +88,7 @@ public class SampleApps {
   }
 
   public static IOSCapabilities uiCatalogCap() {
-    IOSCapabilities c = IOSCapabilities.iphone("UICatalog", "11.2");
+    IOSCapabilities c = IOSCapabilities.iphone("UICatalog", "11.3");
     if (sdkVersion != null) {
       log.info("SET SDK to " + sdkVersion);
       c.setSDKVersion(sdkVersion);
