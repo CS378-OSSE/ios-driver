@@ -1,5 +1,7 @@
 Troubleshooting configuration issues:
 
+# COMMENTS
+
 1) MobileSafari.app/Info.plist (Permission denied)
 error starting instrument for session XXX, Cannot change the default device for the app.
 /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/
