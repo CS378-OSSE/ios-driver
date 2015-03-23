@@ -34,8 +34,8 @@ public class WebDriverSelectorMapping extends BaseIOSDriverTest {
   private
   String
       english =
-      "Mountain 1 was first climbed on 29 May 1953 and has a height of 8,848 meters";
-  private String partial = "first climbed on 29 May 1953";
+      "Mountain 1 was first climbed on May 29, 1953 and has a height of 29,028 feet";
+  private String partial = "first climbed on May 29, 1953";
 
 
   @Test
