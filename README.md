@@ -8,7 +8,7 @@ doc : http://ios-driver.github.com/ios-driver/
 
 
 Contact
-=======
+-------
 
 Most of discussions take place via IRC at freenode on the *ios-driver* channel
 
