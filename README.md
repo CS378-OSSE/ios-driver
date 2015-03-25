@@ -5,8 +5,6 @@ ios-driver
 IOS native, hybrid and web automation
 
 doc : http://ios-driver.github.com/ios-driver/
-
-
 Contact
 ------------
 Most of discussions take place via IRC at freenode on the *ios-driver* channel
@@ -23,6 +21,8 @@ The ["release notes"](https://github.com/ios-driver/ios-driver/blob/master/relea
 
 Building from source :
 -----------------------
+
+Just experimenting
 
 clone the project
 
